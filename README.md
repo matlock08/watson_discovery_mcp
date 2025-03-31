@@ -85,7 +85,7 @@ uv run main-py
 MIT License - see LICENSE file for details.
 
 
-What are the documents in Sample Project under Sample Collection that matches the query Installing Watson Machine Learning
+
 
 
 

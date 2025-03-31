@@ -37,7 +37,7 @@ def get_collections(project_id: str) -> dict | None:
   return discovery_collections
 
 
-def get_query_results(project_id: str, collection_id: list, natural_language_query: str) -> dict | None:
+def get_query_results(project_id: str, collection_id: list, natural_language_query: str, limit: int = 2, filter: str = None ) -> dict | None:
   authenticator = IAMAuthenticator( os.getenv('WATSONX_DISCOVERY_APIKEY') )
   discovery = DiscoveryV2(
       version=os.getenv('WATSONX_DISCOVERY_VERSION'),
@@ -91,20 +91,23 @@ async def watson_discovery_list_collections_from_project(project_id: str) -> dic
 
 
 @mcp.tool()  
-async def watson_discovery_query(project_id: str, collection_id: str, natural_language_query: str) -> dict | None:
+async def watson_discovery_query(project_id: str, collection_id: list, natural_language_query: str, count: int = 2, filter: str = None) -> dict | None:
   """
   Search the latest docs from watson discovery using a given project, collection and query.
   
   Args:
     project_id: The project id in watson discovery to search for (e.g. "572dccbf-9265-4d88-a196-e5ee37da7d40")
-    collection_id: The collection id within the project to search in (e.g. "6706329f-fd85-a21a-0000-0195aad1c183")
+    collection_id: The list of collection ids within the project to search in (e.g. ["6706329f-fd85-a21a-0000-0195aad1c183"])
     natural_language_query: The query to search for in documents in the collection
+    count: The number of documents to return (default is 2) - optional
+    filter: The Watson Discovery filter to apply to the query  - optional
+    (e.g. "What are the documents in Sample Project under Sample Collection that matches the query Installing Watson Machine Learning?")
 
   Returns:
     dict of documents 
   """
   loop = asyncio.get_running_loop()
-  documents = await loop.run_in_executor(None, get_query_results, project_id, [collection_id], natural_language_query )
+  documents = await loop.run_in_executor(None, get_query_results, project_id, collection_id, natural_language_query, count, filter)
 
   return documents["results"]
 
