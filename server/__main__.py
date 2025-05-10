@@ -112,6 +112,8 @@ async def watson_discovery_query(project_id: str, collection_id: list, natural_l
   return documents["results"]
 
 
+def main():
+    mcp.run(transport="stdio")
 
 if __name__ == "__main__":
-    mcp.run(transport="stdio")
+    main()

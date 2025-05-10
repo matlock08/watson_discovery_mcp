@@ -1,5 +1,3 @@
-![Tests](https://github.com/designcomputer/mysql_mcp_server/actions/workflows/test.yml/badge.svg)
-[![smithery badge](https://smithery.ai/badge/mysql-mcp-server)](https://smithery.ai/server/mysql-mcp-server)
 # Watson Discovery MCP Server
 
 A Model Context Protocol (MCP) server that enables secure interaction with Watson Discovery. This server allows AI assistants to list projects, list collections in projects, execute queries through natural language processing.
@@ -86,7 +84,7 @@ MIT License - see LICENSE file for details.
 
 
 
-
+uv run main.py
 
 
 
