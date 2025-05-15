@@ -8,7 +8,7 @@ import asyncio
 import os
 import json
 
-mcp = FastMCP("watson-discovery")
+mcp = FastMCP("mcp-watson-discovery")
 
 USER_AGENT = "watson-app/1.0"
 
@@ -51,38 +51,62 @@ def get_query_results(project_id: str, collection_id: list, natural_language_que
 
 
 @mcp.tool()  
-async def watson_discovery_project(project_name: str) -> str | None:
+async def get_projects() -> dict | None:
   """
-  Search and translates from project name into project_id.
+  # Watson Discovery Get Projects
+
+  ## Description
+  The Watson Discovery Get Projects tool provides access to IBM Watson Discovery's projects, allowing you to retrieve a list of all available projects in your Watson Discovery instance. This tool returns both the human-readable project names and their corresponding unique identifiers (UUIDs) for use in subsequent operations.
+
+  ## Function
+  This tool connects to your IBM Watson Discovery instance using your provided authentication credentials, queries the available projects, and returns structured information about each project.
   
-  Args:
-    project_name: The project name in watson discovery to search for (e.g. "Sample Project")
-    
-  Returns:
-    project_id in UUID format
+  ## Use Cases
+  - Inventory management of Watson Discovery projects
+  - Project selection for further operations, such as querying or collection management
+  - Pre-processing step before performing operations on specific projects
+  - Integration with automated workflows that require project UUIDs
+
+  ## Authentication
+  This tool requires valid IBM Cloud IAM API credentials to access your Watson Discovery instance. Ensure your service account has appropriate permissions to list projects.
+
+  ## Output Format
+  Results are returned as a structured array of project objects, each containing:
+  - `name`: The project name (string)
+  - `project_id`: The project's UUID (string in UUID format)
+  - `type`: The type of project Possible values: [intelligent_document_processing,document_retrieval,conversational_search,content_mining,content_intelligence,other] (string)
+  - `collection_count`: The number of collections configured in this project (integer)
   """
   loop = asyncio.get_running_loop()
   projects = await loop.run_in_executor(None, get_projects)
   
-  print( projects )
-
-  for project in projects["projects"]:
-    if project['name'] == project_name:
-      return project['project_id']
-
-  return None
+  return projects
 
 
 @mcp.tool()  
-async def watson_discovery_list_collections_from_project(project_id: str) -> dict | None:
+async def list_project_collections(project_id: str) -> dict | None:
   """
-  List the collections available in the given project_id
+  # Watson Discovery List Project Collections
+
+  ## Description
+  The Watson Discovery List Project Collections return a lists of existing collections for the specified project and returns structured information about each collection
+
+  ## Function
+  This tool connects to your IBM Watson Discovery instance using your provided authentication credentials, listing the available collections of a project, and returns structured information about each collection.
   
-  Args:
-    project_id: The project id in watson discovery to list the collections (e.g. "572dccbf-9265-4d88-a196-e5ee37da7d40")
-    
-  Returns:
-    dict of collections (e.g. {"collections": [{"name": "Sample Collection", "collection_id": "6706329f-fd85-a21a-0000-0195aad1c183"}]} )
+  ## Use Cases
+  - Inventory management of Watson Discovery collections
+  - Collection selection for further operations, such as querying 
+  - Pre-processing step before performing operations on specific projects and collections
+  - Integration with automated workflows that require collection UUIDs
+
+  ## Authentication
+  This tool requires valid IBM Cloud IAM API credentials to access your Watson Discovery instance. Ensure your service account has appropriate permissions to list collections.
+
+  ## Output Format
+  Results are returned as a structured array of collections objects, each containing:
+  - `name`: The collection name (string)
+  - `collection_id`: The collection's UUID (string in UUID format)  
   """
   loop = asyncio.get_running_loop()
   collections = await loop.run_in_executor(None, get_collections, project_id)
@@ -91,20 +115,29 @@ async def watson_discovery_list_collections_from_project(project_id: str) -> dic
 
 
 @mcp.tool()  
-async def watson_discovery_query(project_id: str, collection_id: list, natural_language_query: str, count: int = 2, filter: str = None) -> dict | None:
+async def query_project(project_id: str, collection_id: list, natural_language_query: str, count: int = 2, filter: str = None) -> dict | None:
   """
-  Search the latest docs from watson discovery using a given project, collection and query.
-  
-  Args:
-    project_id: The project id in watson discovery to search for (e.g. "572dccbf-9265-4d88-a196-e5ee37da7d40")
-    collection_id: The list of collection ids within the project to search in (e.g. ["6706329f-fd85-a21a-0000-0195aad1c183"])
-    natural_language_query: The query to search for in documents in the collection
-    count: The number of documents to return (default is 2) - optional
-    filter: The Watson Discovery filter to apply to the query  - optional
-    (e.g. "What are the documents in Sample Project under Sample Collection that matches the query Installing Watson Machine Learning?")
+   # Watson Discovery Query Project
 
-  Returns:
-    dict of documents 
+  ## Description
+  Search your data by submitting queries that are written in natural language for the specified project and collections. The query returns a list of documents that match the query criteria.
+
+  ## Function
+  This tool connects to your IBM Watson Discovery instance using your provided authentication credentials, listing the available documents of a project and collections, and returns structured information about each document.
+  
+  ## Use Cases
+  - Search and retrieve documents from a specific project and collection
+  - Integration with automated workflows that require document retrieval
+  
+  ## Authentication
+  This tool requires valid IBM Cloud IAM API credentials to access your Watson Discovery instance. Ensure your service account has appropriate permissions to query projects.
+
+  ## Output Format
+  Results are returned as a structured array of result objects, each containing:
+  - `document_id`: The unique identifier of the document (string)
+  - `result_metadata`: Metadata of a query result (object)
+  - `metadata`: Metadata of the document (object)
+  - `document_passages`: Passages from the document that best matches the query (object)
   """
   loop = asyncio.get_running_loop()
   documents = await loop.run_in_executor(None, get_query_results, project_id, collection_id, natural_language_query, count, filter)
