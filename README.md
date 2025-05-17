@@ -1,6 +1,6 @@
-# Watson Discovery MCP Server
+# MCP Watson Discovery Server
 
-A Model Context Protocol (MCP) server that enables secure interaction with Watson Discovery. This server allows AI assistants to list projects, list collections in projects, execute queries through natural language processing.
+A Model Context Protocol (MCP) server that enables secure interaction with Watson Discovery. This server allows AI assistants to list projects, list collections in projects, execute queries through natural language process.
 
 ## Features
 
@@ -34,7 +34,7 @@ Add this to your `claude_desktop_config.json`:
 			"args": [
 				"bash",
 				"-c",
-				"/home/morpheus/.local/bin/uv --directory /home/morpheus/workspace/mcp-discovery run main.py"
+				"/home/morpheus/.local/bin/uv --directory /home/morpheus/workspace/mcp-discovery run 'server/__main__.py'"
 			]
 		}
 	}
@@ -48,7 +48,7 @@ Add this to your `claude_desktop_config.json`:
 uv install 
 
 # Run the server
-uv run main-py
+uv run server/__main__.py
 ```
 
 ## Development
@@ -66,25 +66,13 @@ source venv/bin/activate  # or `venv\Scripts\activate` on Windows
 uv install
 
 # Run 
-uv run main-py
+uv run run server/__main__.py
 ```
-
-## Security Considerations
-
-- Never commit environment variables or credentials
-- Use a database user with minimal required permissions
-- Consider implementing query whitelisting for production use
-- Monitor and log all database operations
-
-## Security Best Practices
 
 ## License
 
 MIT License - see LICENSE file for details.
 
-
-
-uv run main.py
 
 
 

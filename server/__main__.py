@@ -12,7 +12,7 @@ mcp = FastMCP("mcp-watson-discovery")
 
 USER_AGENT = "watson-app/1.0"
 
-def get_projects() -> dict | None:
+def get_watson_projects() -> dict | None:
   authenticator = IAMAuthenticator( os.getenv('WATSONX_DISCOVERY_APIKEY') )
   discovery = DiscoveryV2(
       version=os.getenv('WATSONX_DISCOVERY_VERSION'),
@@ -21,10 +21,17 @@ def get_projects() -> dict | None:
 
   discovery.set_service_url( os.getenv('WATSONX_DISCOVERY_URL') )
 
-  discovery_projects = discovery.list_projects().get_result()
-  return discovery_projects
+  projects = discovery.list_projects()
 
-def get_collections(project_id: str) -> dict | None:
+  if projects.get_status_code() == 200:
+
+    discovery_projects = projects.get_result()
+    return discovery_projects
+  
+  else:
+    return None
+
+def get_watson_collections(project_id: str) -> dict | None:
   authenticator = IAMAuthenticator( os.getenv('WATSONX_DISCOVERY_APIKEY') )
   discovery = DiscoveryV2(
       version=os.getenv('WATSONX_DISCOVERY_VERSION'),
@@ -33,11 +40,16 @@ def get_collections(project_id: str) -> dict | None:
 
   discovery.set_service_url( os.getenv('WATSONX_DISCOVERY_URL'))
 
-  discovery_collections = discovery.list_collections(project_id).get_result()
-  return discovery_collections
+  collection = discovery.list_collections(project_id)
+
+  if collection.get_status_code() == 200:
+    return collection.get_result()
+  else:
+    return None
+  
 
 
-def get_query_results(project_id: str, collection_id: list, natural_language_query: str, limit: int = 2, filter: str = None ) -> dict | None:
+def get_watson_query_results(project_id: str, collection_id: list, natural_language_query: str, limit: int = 2, filter: str = None ) -> dict | None:
   authenticator = IAMAuthenticator( os.getenv('WATSONX_DISCOVERY_APIKEY') )
   discovery = DiscoveryV2(
       version=os.getenv('WATSONX_DISCOVERY_VERSION'),
@@ -46,8 +58,13 @@ def get_query_results(project_id: str, collection_id: list, natural_language_que
 
   discovery.set_service_url( os.getenv('WATSONX_DISCOVERY_URL') )
 
-  query_results = discovery.query(project_id=project_id, collection_ids=collection_id, natural_language_query=natural_language_query,count=2).get_result()
-  return query_results
+  query = discovery.query(project_id=project_id, collection_ids=collection_id, natural_language_query=natural_language_query,count=2)
+
+  if query.get_status_code() == 200:
+    return query.get_result()
+  else:
+    return None
+  
 
 
 @mcp.tool()  
@@ -78,7 +95,7 @@ async def get_projects() -> dict | None:
   - `collection_count`: The number of collections configured in this project (integer)
   """
   loop = asyncio.get_running_loop()
-  projects = await loop.run_in_executor(None, get_projects)
+  projects = await loop.run_in_executor(None, get_watson_projects)
   
   return projects
 
@@ -109,7 +126,7 @@ async def list_project_collections(project_id: str) -> dict | None:
   - `collection_id`: The collection's UUID (string in UUID format)  
   """
   loop = asyncio.get_running_loop()
-  collections = await loop.run_in_executor(None, get_collections, project_id)
+  collections = await loop.run_in_executor(None, get_watson_collections, project_id)
 
   return collections
 
@@ -140,7 +157,7 @@ async def query_project(project_id: str, collection_id: list, natural_language_q
   - `document_passages`: Passages from the document that best matches the query (object)
   """
   loop = asyncio.get_running_loop()
-  documents = await loop.run_in_executor(None, get_query_results, project_id, collection_id, natural_language_query, count, filter)
+  documents = await loop.run_in_executor(None, get_watson_query_results, project_id, collection_id, natural_language_query, count, filter)
 
   return documents["results"]
 
