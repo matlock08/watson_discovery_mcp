@@ -67,6 +67,8 @@ uv install
 
 # Run 
 uv run run server/__main__.py
+
+env WATSONX_DISCOVERY_APIKEY= env WATSONX_DISCOVERY_URL= env WATSONX_DISCOVERY_VERSION=2023-03-31 uvx mcp-watson-discovery 
 ```
 
 ## License
