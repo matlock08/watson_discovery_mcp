@@ -132,7 +132,7 @@ async def list_project_collections(project_id: str) -> dict | None:
 
 
 @mcp.tool()  
-async def query_project(project_id: str, collection_id: list, natural_language_query: str, count: int = 2, filter: str = None) -> dict | None:
+async def query_project(project_id: str, collection_id: list, natural_language_query: str, count: int = 2, filter: str = "") -> dict | None:
   """
    # Watson Discovery Query Project
 
