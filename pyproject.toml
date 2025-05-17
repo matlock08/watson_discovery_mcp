@@ -18,4 +18,4 @@ dependencies = [
 Homepage = "https://github.com/matlock08/watson_discovery_mcp"
 
 [project.scripts]
-mcp-discovery = "server.__main__:main"
+mcp-watson-discovery = "server.__main__:main"
